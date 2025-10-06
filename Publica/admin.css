@@ -22,6 +22,27 @@ body {
 }
 
 /* ==========================================
+   NAVBAR
+   ========================================== */
+.navbar {
+  background-color: var(--rosa-fuerte) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  transition: opacity var(--transition-speed);
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+/* ==========================================
    TÍTULOS
    ========================================== */
 .page-title {
@@ -69,4 +90,19 @@ body {
 /* Gap personalizado */
 .gap-2 {
   gap: 0.5rem !important;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 768px) {
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
 }
