@@ -1,0 +1,72 @@
+/* ==========================================
+   VARIABLES
+   ========================================== */
+:root {
+  --rosa-claro: #e992af;
+  --rosa-fuerte: #d63384;
+  --accent-dark: #b52b69;
+  --bg-light: #fff0f6;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+  --border-radius: 15px;
+  --transition-speed: 0.3s;
+}
+
+/* ==========================================
+   ESTILOS GENERALES
+   ========================================== */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: var(--bg-light);
+  color: #333;
+}
+
+/* ==========================================
+   TÍTULOS
+   ========================================== */
+.page-title {
+  color: var(--rosa-fuerte);
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+.btn-rosa {
+  background-color: var(--rosa-fuerte);
+  color: white;
+  border: none;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.btn-rosa:hover {
+  background-color: var(--accent-dark);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-rosa:focus {
+  box-shadow: 0 0 0 0.25rem rgba(214, 51, 132, 0.25);
+}
+
+/* ==========================================
+   UTILIDADES
+   ========================================== */
+.d-none {
+  display: none !important;
+}
+
+/* Spinner personalizado */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  margin: 2rem auto;
+}
+
+/* Gap personalizado */
+.gap-2 {
+  gap: 0.5rem !important;
+}
