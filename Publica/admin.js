@@ -297,3 +297,81 @@ const UI = {
     reader.readAsDataURL(file);
   }
 };
+
+// ==========================================
+// CONTROLADOR DE FORMULARIO
+// ==========================================
+const FormController = {
+  /**
+   * Obtiene los datos del formulario
+   * @returns {Object} - Datos del formulario
+   */
+  obtenerDatosFormulario() {
+    return {
+      nombre: document.getElementById('nombre').value.trim(),
+      tipo: document.getElementById('tipo').value,
+      raza: document.getElementById('raza').value.trim(),
+      edad: document.getElementById('edad').value.trim(),
+      direccion: document.getElementById('direccion').value.trim(),
+      propietario: document.getElementById('propietario').value.trim()
+    };
+  },
+
+  /**
+   * Rellena el formulario con datos de una mascota
+   * @param {Object} mascota - Datos de la mascota
+   */
+  rellenarFormulario(mascota) {
+    elementos.inputMascotaId.value = mascota.id;
+    document.getElementById('nombre').value = mascota.nombre;
+    document.getElementById('tipo').value = mascota.tipo;
+    document.getElementById('raza').value = mascota.raza;
+    document.getElementById('edad').value = mascota.edad;
+    document.getElementById('direccion').value = mascota.direccion;
+    document.getElementById('propietario').value = mascota.propietario;
+
+    if (mascota.foto_url) {
+      elementos.previewContainer.innerHTML = `
+        <img src="${mascota.foto_url}" class="preview-img" alt="${mascota.nombre}">
+      `;
+    }
+  },
+
+  /**
+   * Limpia el formulario
+   */
+  limpiarFormulario() {
+    elementos.form.reset();
+    elementos.form.classList.remove('was-validated');
+    elementos.inputMascotaId.value = '';
+    elementos.previewContainer.innerHTML = '';
+  },
+
+  /**
+   * Prepara el formulario para crear una nueva mascota
+   */
+  prepararNuevaMascota() {
+    this.limpiarFormulario();
+    UI.actualizarTituloFormulario('Registrar Nueva Mascota', 'bi-file-earmark-plus');
+    UI.toggleFormulario(true);
+    appState.modoEdicion = false;
+  },
+
+  /**
+   * Prepara el formulario para editar una mascota
+   */
+  prepararEdicion() {
+    UI.actualizarTituloFormulario('Editar Mascota', 'bi-pencil');
+    UI.toggleFormulario(true);
+    appState.modoEdicion = true;
+  },
+
+  /**
+   * Cancela la edición/creación
+   */
+  cancelar() {
+    this.limpiarFormulario();
+    UI.toggleFormulario(false);
+    appState.modoEdicion = false;
+  }
+};
