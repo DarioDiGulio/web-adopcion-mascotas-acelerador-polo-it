@@ -291,6 +291,33 @@ body {
 }
 
 /* ==========================================
+   MODAL
+   ========================================== */
+.modal-header {
+  background-color: var(--rosa-fuerte);
+  color: white;
+  border-bottom: none;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-content {
+  border-radius: var(--border-radius);
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 1.5rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  font-size: 1rem;
+  color: #495057;
+}
+
+/* ==========================================
    UTILIDADES
    ========================================== */
 .d-none {
@@ -366,5 +393,14 @@ body {
 @media (max-width: 576px) {
   .table-responsive {
     font-size: 0.8rem;
+  }
+}
+
+/* ==========================================
+   MEJORAS RESPONSIVE PARA MODAL
+   ========================================== */
+@media (max-width: 576px) {
+  .modal-content {
+    margin: 1rem;
   }
 }
