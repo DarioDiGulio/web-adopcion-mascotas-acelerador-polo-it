@@ -375,3 +375,113 @@ const FormController = {
     appState.modoEdicion = false;
   }
 };
+
+// ==========================================
+// CONTROLADOR PRINCIPAL
+// ==========================================
+const MascotaController = {
+  /**
+   * Inicializa la aplicación
+   */
+  async init() {
+    this.cargarMascotas();
+    this.inicializarEventos();
+  },
+
+  /**
+   * Inicializa los event listeners
+   */
+  inicializarEventos() {
+    // Botón nueva mascota
+    elementos.btnNuevaMascota.addEventListener('click', () => {
+      FormController.prepararNuevaMascota();
+    });
+
+    // Botón cancelar
+    elementos.btnCancelar.addEventListener('click', () => {
+      FormController.cancelar();
+    });
+
+    // Preview de imagen
+    elementos.inputFoto.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      UI.previsualizarImagen(file);
+    });
+
+    // Submit del formulario
+    elementos.form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.guardarMascota();
+    });
+
+    // Botón confirmar eliminar
+    elementos.btnConfirmarEliminar.addEventListener('click', () => {
+      this.eliminarMascota();
+    });
+  },
+
+  /**
+   * Carga todas las mascotas desde la API
+   */
+  async cargarMascotas() {
+    try {
+      UI.mostrarSpinner();
+      const mascotas = await API.obtenerMascotas();
+      UI.renderizarTabla(mascotas);
+    } catch (error) {
+      console.error('Error al cargar mascotas:', error);
+      Utils.mostrarAlerta('Error al cargar las mascotas', 'danger');
+      elementos.tablaMascotas.innerHTML = `
+        <tr>
+          <td colspan="9" class="text-center text-danger">
+            Error al cargar las mascotas
+          </td>
+        </tr>
+      `;
+    }
+  },
+
+  /**
+   * Guarda una mascota (crear o actualizar)
+   */
+  async guardarMascota() {
+    // Validar formulario
+    if (!Utils.validarFormulario(elementos.form)) {
+      Utils.mostrarAlerta('Por favor complete todos los campos requeridos', 'warning');
+      return;
+    }
+
+    try {
+      const mascotaId = elementos.inputMascotaId.value;
+
+      if (appState.modoEdicion && mascotaId) {
+        // Actualizar mascota existente
+        const data = FormController.obtenerDatosFormulario();
+        await API.actualizarMascota(mascotaId, data);
+        Utils.mostrarAlerta('Mascota actualizada exitosamente', 'success');
+      } else {
+        // Crear nueva mascota
+        const formData = new FormData();
+        const datos = FormController.obtenerDatosFormulario();
+        
+        Object.keys(datos).forEach(key => {
+          formData.append(key, datos[key]);
+        });
+
+        const fotoFile = elementos.inputFoto.files[0];
+        if (fotoFile) {
+          formData.append('foto', fotoFile);
+        }
+
+        await API.crearMascota(formData);
+        Utils.mostrarAlerta('Mascota registrada exitosamente', 'success');
+      }
+
+      FormController.cancelar();
+      this.cargarMascotas();
+    } catch (error) {
+      console.error('Error al guardar mascota:', error);
+      Utils.mostrarAlerta('Error al guardar la mascota', 'danger');
+    }
+  }
+};
