@@ -106,6 +106,71 @@ body {
 }
 
 /* ==========================================
+   FORMULARIO
+   ========================================== */
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  padding: 0.625rem 0.875rem;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--rosa-fuerte);
+  box-shadow: 0 0 0 0.25rem rgba(214, 51, 132, 0.15);
+}
+
+.invalid-feedback {
+  display: none;
+  font-size: 0.875rem;
+  color: #dc3545;
+  margin-top: 0.25rem;
+}
+
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+  border-color: #dc3545;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.was-validated .form-select:invalid ~ .invalid-feedback {
+  display: block;
+}
+
+.was-validated .form-control:valid {
+  border-color: #198754;
+}
+
+.was-validated .form-select:valid {
+  border-color: #198754;
+}
+
+/* ==========================================
+   PREVIEW DE IMAGEN
+   ========================================== */
+.preview-img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  display: block;
+  margin-top: 0.75rem;
+}
+
+#previewContainer {
+  min-height: 50px;
+}
+
+/* ==========================================
    UTILIDADES
    ========================================== */
 .d-none {
