@@ -128,15 +128,30 @@ const API = {
    */
   async crearMascota(formData) {
     const url = Utils.crearURL(CONFIG.ENDPOINTS.MASCOTA);
-    const response = await fetch(url, {
-      method: 'POST',
-      body: formData
-    });
-    
-    if (!response.ok) {
-      throw new Error('Error al crear la mascota');
+    // soporta FormData (multipart) o un plain object que será enviado como JSON
+    const isFormData = (typeof FormData !== 'undefined') && (formData instanceof FormData);
+    const options = { method: 'POST' };
+
+    if (isFormData) {
+      options.body = formData;
+    } else {
+      options.headers = { 'Content-Type': 'application/json' };
+      options.body = JSON.stringify(formData);
     }
-    
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      // intentar leer el cuerpo de error para depuración
+      let errBody = '';
+      try {
+        errBody = await response.text();
+      } catch (e) {
+        errBody = response.statusText;
+      }
+      throw new Error(`Error al crear la mascota: ${response.status} ${errBody}`);
+    }
+
     return await response.json();
   },
 
@@ -451,8 +466,11 @@ const MascotaController = {
       return;
     }
 
+    let submitButton;
     try {
       const mascotaId = elementos.inputMascotaId.value;
+      submitButton = elementos.form.querySelector('button[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
 
       if (appState.modoEdicion && mascotaId) {
         // Actualizar mascota existente
@@ -461,19 +479,22 @@ const MascotaController = {
         Utils.mostrarAlerta('Mascota actualizada exitosamente', 'success');
       } else {
         // Crear nueva mascota
-        const formData = new FormData();
         const datos = FormController.obtenerDatosFormulario();
-        
-        Object.keys(datos).forEach(key => {
-          formData.append(key, datos[key]);
-        });
-
         const fotoFile = elementos.inputFoto.files[0];
+
         if (fotoFile) {
+          // enviar multipart/form-data
+          const formData = new FormData();
+          Object.keys(datos).forEach(key => formData.append(key, datos[key]));
           formData.append('foto', fotoFile);
+          console.log('Enviando FormData con imagen');
+          await API.crearMascota(formData);
+        } else {
+          // enviar JSON (backend acepta JSON, como se usó en Postman)
+          console.log('Enviando JSON sin imagen', datos);
+          await API.crearMascota(datos);
         }
 
-        await API.crearMascota(formData);
         Utils.mostrarAlerta('Mascota registrada exitosamente', 'success');
       }
 
@@ -482,6 +503,60 @@ const MascotaController = {
     } catch (error) {
       console.error('Error al guardar mascota:', error);
       Utils.mostrarAlerta('Error al guardar la mascota', 'danger');
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
+  },
+
+  /**
+   * Prepara el formulario para editar una mascota
+   * @param {number} id - ID de la mascota
+   */
+  async editarMascota(id) {
+    try {
+      const mascota = await API.obtenerMascota(id);
+      FormController.rellenarFormulario(mascota);
+      FormController.prepararEdicion();
+    } catch (error) {
+      console.error('Error al cargar mascota:', error);
+      Utils.mostrarAlerta('Error al cargar los datos de la mascota', 'danger');
+    }
+    },
+
+  /**
+   * Muestra el modal de confirmación para eliminar
+   * @param {number} id - ID de la mascota
+   */
+  confirmarEliminar(id) {
+    appState.mascotaAEliminar = id;
+    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+  },
+
+  /**
+   * Elimina una mascota
+   */
+  async eliminarMascota() {
+    if (!appState.mascotaAEliminar) return;
+
+    try {
+      await API.eliminarMascota(appState.mascotaAEliminar);
+      Utils.mostrarAlerta('Mascota eliminada exitosamente', 'success');
+      this.cargarMascotas();
+    } catch (error) {
+      console.error('Error al eliminar mascota:', error);
+      Utils.mostrarAlerta('Error al eliminar la mascota', 'danger');
+    } finally {
+      appState.mascotaAEliminar = null;
+      const modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+      modal.hide();
     }
   }
 };
+
+// ==========================================
+// INICIALIZACIÓN
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  MascotaController.init();
+});
